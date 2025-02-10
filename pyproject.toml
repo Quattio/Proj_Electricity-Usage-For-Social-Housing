@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools", "wheel"]  
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "project name"  
+version = "0.1.0"  
+description = "A python project template for analysis and reporting"
+authors = [
+    { name = "Sichen Li", email = "sichen@quatt.io" }
+]
+dependencies = [
+    "pandas",  
+    "numpy",   
+    "matplotlib" 
+]
+
+[tool.black]  
+line-length = 88
+

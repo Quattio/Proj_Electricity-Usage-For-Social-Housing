@@ -1,0 +1,15 @@
+
+One customer,
+gas usage 1000 kwh (100 m^3)
+From 2023.01 to 2024.12
+
+total per year per house: 100 m^3
+per M2: 100 m^3 / house area
+Per house size range： 100 m^3 in group B.
+
+
+I have create the page in slite for this small project： https://github.com/Quattio/quatt-data-loader
+Here is the git repo for my data-loader: https://github.com/Quattio/quatt-data-loader
+I git clone the data-loader and create the git repo for this project: https://github.com/Quattio/Proj_Electricity-Usage-For-Social-Housing
+
+
