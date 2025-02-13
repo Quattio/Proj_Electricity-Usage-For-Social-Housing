@@ -62,7 +62,7 @@ def main():
     # Save
     if args.subpackage in ('clickhouse', 'mysql', 'snowflake'):
         print(extractedData)
-        extractedData.to_csv("../Data/extractedData_" + str(args.subpackage) + ".csv", index=False )    
+        # extractedData.to_csv("Data/extractedData_" + str(args.subpackage) + ".csv", index=False )    
     else:
         print(extractedData)
 
