@@ -21,7 +21,6 @@ def prepare(prequatt, data, data_during_day, data_electricity_usage_year, data_e
     data_during_day['time_slot'] = data_during_day['interval_time'].dt.strftime('%H:%M:%S')
     data_during_day['time_slot_hourly'] = data_during_day['interval_time'].dt.strftime('%H:00:00')
 
-
     aggrgate_during_day_10mins = data_during_day.groupby('time_slot').agg({
         'activeCIC': 'mean',
         'avg_gas_usage': 'mean',
@@ -36,15 +35,23 @@ def prepare(prequatt, data, data_during_day, data_electricity_usage_year, data_e
         'avg_electricity_usage': 'sum'  
     }).reset_index()
 
-    return prequatt, data, aggrgate_during_day_10mins, aggrgate_during_day_hourly
+    data_during_day.set_index('interval_time', inplace=True)
+    data_resampled = data_during_day.resample('1D').agg({
+        'activeCIC': 'mean',  
+        'avg_gas_usage': 'sum', 
+        'avg_co2_emission': 'sum',  
+        'avg_electricity_usage': 'sum'  
+    }).reset_index()
+
+    return prequatt, data, data_resampled, aggrgate_during_day_10mins, aggrgate_during_day_hourly
 
 
 def calculations(data, prequatt, housebins, houselabels):
     nubmer_of_customer_afterQuatt = len(data)
     number_of_prequatt = len(prequatt)
 
-    print("nubmer_of_customer_afterQuatt: " + str(nubmer_of_customer_afterQuatt))
-    print("prequatt: " + str(number_of_prequatt))
+    #print("nubmer_of_customer_afterQuatt: " + str(nubmer_of_customer_afterQuatt))
+    #print("prequatt: " + str(number_of_prequatt))
 
     data['HOUSESIZE_CATEGORY'] = pd.cut(data['PROPERTY_DIMENSIONSOFTHEHOUSE'], bins=housebins, labels=houselabels, right=False)
     prequatt['HOUSESIZE_CATEGORY'] = pd.cut(prequatt['AREA'], bins=housebins, labels=houselabels, right=False)

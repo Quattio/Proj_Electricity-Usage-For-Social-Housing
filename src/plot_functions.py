@@ -1,6 +1,27 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from pySankey.sankey import sankey
+import matplotlib.dates as mdates
+
+def SankeyDiagram(data): 
+
+    # Create Sankey diagram again
+    data = data.dropna(subset=["HOUSESIZE_CATEGORY", "ENERGIELABEL"])
+
+    sankey(
+        left=data["HOUSESIZE_CATEGORY"], right=data["ENERGIELABEL"], 
+        aspect=10, fontsize=20
+    )
+
+    # Get current figure
+    fig = plt.gcf()
+    # Set size in inches
+    fig.set_size_inches(6, 12)
+    # Set the color of the background to white
+    fig.set_facecolor("w")
+    # Save the figure
+    fig.savefig("../Plots/Sankey_housesieze_energylabel.png", bbox_inches="tight", dpi=150)
 
 
 def plot_histogram(bin_width, data, xlabel, outputname, x_max=None): 
@@ -15,7 +36,6 @@ def plot_histogram(bin_width, data, xlabel, outputname, x_max=None):
         plt.xlim(0, x_max) 
     plt.savefig('../Plots/' + outputname + '.png')
     plt.close()
-
 
 def plot_histogram_two_overlap(bin_width, data1, data2, xlabel, outputname, unit, x_max=None):
     binWidth = bin_width
@@ -34,7 +54,7 @@ def plot_histogram_two_overlap(bin_width, data1, data2, xlabel, outputname, unit
     plt.close()
 
 
-def plot_as_usage_during_day(data_during_day, xaxis, columname, ylabel, outputname, monthname):
+def plot_usage_during_day(data_during_day, xaxis, columname, ylabel, outputname, monthname):
 
     plt.figure(figsize=(30, 16))
 
@@ -48,7 +68,7 @@ def plot_as_usage_during_day(data_during_day, xaxis, columname, ylabel, outputna
     plt.ylabel(ylabel)
 
     time_slots = data_during_day[xaxis]
-    hourly_ticks = time_slots[::6]
+    hourly_ticks = time_slots[::1]
     plt.xticks(hourly_ticks, rotation=45, fontsize=20)
     plt.scatter([max_time], [max_value], color='r', s=600, label='Max Value', zorder=3)  
     plt.scatter([min_time], [min_value], color='g', s=600, label='Min Value', zorder=3)  
@@ -62,8 +82,22 @@ def plot_as_usage_during_day(data_during_day, xaxis, columname, ylabel, outputna
     plt.savefig('../Plots/' + outputname + monthname + '.png')
     plt.close()
 
+def plot_usage_during_year(data_resampled, datacolumn, xlabel, ylabel, outputname):
 
-def plot_proerty_diffgroup(bin_centers, data, xlabel, ylabel, outputname):
+    plt.figure(figsize=(30, 16))
+    plt.plot(data_resampled['interval_time'], data_resampled[datacolumn], marker='o', markersize=20, linestyle='-', linewidth=8, color='b')
+
+
+    plt.gca().xaxis.set_major_locator(mdates.MonthLocator(interval=1))  
+    #plt.gca().xaxis.set_minor_locator(mdates.DayLocator(interval=7))  
+
+    plt.xticks(rotation=45, fontsize=35)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.savefig('../Plots/' + outputname )
+
+
+def plot_proerty_diffhousesize(bin_centers, data, xlabel, ylabel, outputname):
     plt.figure(figsize=(30, 16))
     plt.plot(bin_centers[1:], data[1:-1], marker='o', markersize=20, linestyle='-', linewidth=8, color='b')
     plt.xlabel(xlabel)
@@ -71,7 +105,7 @@ def plot_proerty_diffgroup(bin_centers, data, xlabel, ylabel, outputname):
     #plt.legend()
     plt.savefig('../Plots/' + outputname )
 
-def plot_proerty_diffgroup_two_overlap(bin_centers, data1, data2, xlabel, ylabel, outputname):
+def plot_proerty_diffhousesize_two_overlap(bin_centers, data1, data2, xlabel, ylabel, outputname):
     plt.figure(figsize=(30, 16))
     plt.plot(bin_centers[1:], data1[1:-1], marker='o', markersize=20, linestyle='-', linewidth=8, color='b', label='pre Quatt')
     plt.plot(bin_centers[1:], data2[1:-1], marker='s', markersize=20, linestyle='-', linewidth=8, color='r', label='after Quatt')
