@@ -68,7 +68,7 @@ def plot_usage_during_day(data_during_day, xaxis, columname, ylabel, outputname,
     plt.ylabel(ylabel)
 
     time_slots = data_during_day[xaxis]
-    hourly_ticks = time_slots[::1]
+    hourly_ticks = time_slots[::6]
     plt.xticks(hourly_ticks, rotation=45, fontsize=20)
     plt.scatter([max_time], [max_value], color='r', s=600, label='Max Value', zorder=3)  
     plt.scatter([min_time], [min_value], color='g', s=600, label='Min Value', zorder=3)  
@@ -81,6 +81,9 @@ def plot_usage_during_day(data_during_day, xaxis, columname, ylabel, outputname,
     plt.grid()
     plt.savefig('../Plots/' + outputname + monthname + '.png')
     plt.close()
+
+    print("max value:" + str(data_during_day[columname].max()) )
+    print("average value:" + str(data_during_day[columname].mean()) )
 
 def plot_usage_during_year(data_resampled, datacolumn, xlabel, ylabel, outputname):
 

@@ -20,18 +20,6 @@ def query_define(extractVariables, table, clientid, startTime, endTime):
     return base_query, params
 
 
-def listDataBases():
-    # DataBases: "default" and "system" 
-    return f'''
-    SHOW DATABASES
-    '''
-
-def listTables():
-    return f'''
-    SHOW TABLES
-    '''
-
-
 def CiCdata_MoreThanOneYear():
     return f'''
     WITH EligibleClients AS (
@@ -76,6 +64,7 @@ def ElectricityUsage_over_year():
     JOIN EligibleClients c ON s.clientid = c.clientid
     WHERE
             time_ts BETWEEN '2024-10-01 00:00:00' AND '2025-02-20 00:00:00'
+            AND system_ccNumberOfHeatPumps=1  -- Hybrid or DUO
     GROUP BY
             s.clientid
     '''
@@ -102,11 +91,9 @@ def data_during_day():
             -- And clientid LIKE 'CIC-1%' OR clientid LIKE 'CIC-2%'
             And clientid LIKE 'CIC-1%' 
             -- AND substring(clientid, 5, 2) BETWEEN '11' AND '1A' 
+            AND system_ccNumberOfHeatPumps=1  -- Hybrid or DUO
         GROUP BY clientid, interval_time  
     ) AS per_client_usage
     GROUP BY interval_time
     ORDER BY interval_time;
     '''
-
-
-

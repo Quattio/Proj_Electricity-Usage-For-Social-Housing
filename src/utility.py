@@ -7,14 +7,29 @@ import os
 import utility
 
 
-def prepare(prequatt, data, data_during_day, data_electricity_usage_year, data_electricity_usage_heatingseason):
+def prepare(prequatt, afterquatt, data_during_day, data_electricity_usage_year, data_electricity_usage_heatingseason, installation_type):
+
+    # pre/after quatt
+    prequatt = prequatt.dropna()
+    prequatt = prequatt.drop_duplicates(subset=["DEAL_ID"])
+    afterquatt = afterquatt.drop_duplicates(subset=["OBJECTID"])
+
+    # Hybrid or DUO
+    merged_quatt = afterquatt.merge(prequatt, left_on="OBJECTID", right_on="DEAL_ID")
+    if installation_type == 'Hybrid':
+        prequatt = merged_quatt[merged_quatt['E_HP2'] == 0]
+        afterquatt = merged_quatt[merged_quatt['E_HP2'] == 0]
+    elif installation_type == 'DUO':
+        prequatt = merged_quatt[merged_quatt['E_HP2'] != 0]
+        afterquatt = merged_quatt[merged_quatt['E_HP2'] != 0]
+    else:
+        raise ValueError("need installation_type as input")  
+
+    # afterquatt = afterquatt.merge(prequatt[['DEAL_ID', 'ENERGIELABEL']], left_on='OBJECTID', right_on='DEAL_ID', how='left')
+    afterquatt.drop(columns=['DEAL_ID'], inplace=True)
 
     data_electricity_usage_year = data_electricity_usage_year.dropna()
     data_electricity_usage_heatingseason = data_electricity_usage_heatingseason.dropna()
-
-    prequatt = prequatt.dropna()
-    data = data.merge(prequatt[['DEAL_ID', 'ENERGIELABEL']], left_on='OBJECTID', right_on='DEAL_ID', how='left')
-    data.drop(columns=['DEAL_ID'], inplace=True)
 
     data_during_day['interval_time'] = pd.to_datetime(data_during_day['interval_time'])
 
@@ -43,7 +58,7 @@ def prepare(prequatt, data, data_during_day, data_electricity_usage_year, data_e
         'avg_electricity_usage': 'sum'  
     }).reset_index()
 
-    return prequatt, data, data_resampled, aggrgate_during_day_10mins, aggrgate_during_day_hourly
+    return prequatt, afterquatt, data_resampled, aggrgate_during_day_10mins, aggrgate_during_day_hourly
 
 
 def calculations(data, prequatt, housebins, houselabels):
